@@ -1,45 +1,109 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link id="favicon" rel="icon" href="https://cdn.glitch.com/4733404f-fac7-44c0-9994-ad38268ee641%2Fopen-file-folder_1f4c2.png?v=1580048783399" type="image/png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>==^ (ll) hhg1. </title>
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles.css">
     <style>
         body {
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-        }
-        
-        #playButton {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            overflow: hidden;
+            background-color: black;
+            color: white;
             font-size: 24px;
-            cursor: pointer;
+            font-family: "Comic Sans MS", cursive;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .moving-text {
+            position: absolute;
+        }
+
+        .special {
+            color: #4b70e8;
         }
     </style>
 </head>
 <body>
-    <div id="playButton">▶</div>
-    <audio id="audio" style="display:none;">
-        <source src="audio.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
     <script>
-        document.getElementById("playButton").addEventListener("click", function() {
+        function play() {
             var audio = document.getElementById("audio");
             audio.play();
-            this.style.display = "none";
-        });
+
+            var overlay = document.getElementById("overlay");
+            overlay.style.display = "none";
+        }
+    </script>
+    <div id="overlay" onclick="play()">
+        <p id="entertext"> hi </p>
+    </div>
+    <audio id="audio" src="https://github.com/4v1r/v1/raw/main/audio.mp3"></audio>
+    <script>
+        let StarsCount = 0;
+
+        function createAndMoveText() {
+            const movingText = document.createElement('div');
+            movingText.className = 'moving-text';
+
+            if (Math.random() < 0.001 ) {
+                movingText.classList.add('special');
+            }
+
+            movingText.textContent = '★';
+            document.body.appendChild(movingText);
+
+            const points = generateRandomPoints(3);
+            animateMovingText(movingText, points, 0);
+
+            setTimeout(() => {
+                StarsCount++;
+                createAndMoveText();
+            }, 1000);
+        }
+
+        function animateMovingText(element, points, currentIndex) {
+            const currentPoint = points[currentIndex];
+
+            const animation = element.animate([
+                { transform: 'translate(0, 0)' },
+                { transform: `translate(${currentPoint.x}px, ${currentPoint.y}px)` }
+            ], {
+                duration: 2000,
+                iterations: 1,
+                easing: 'ease-in-out'
+            });
+
+            animation.onfinish = () => {
+                if (currentIndex < points.length - 1) {
+                    animateMovingText(element, points, currentIndex + 1);
+                } else {
+                    const newPoints = generateRandomPoints(3);
+                    animateMovingText(element, newPoints, 0);
+                }
+            };
+        }
+
+        function generateRandomPoints(numPoints) {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            const points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const randomX = Math.random() * (centerX * 2) - centerX;
+                const randomY = Math.random() * (centerY * 2) - centerY;
+                points.push({ x: randomX, y: randomY });
+            }
+
+            return points;
+        }
+
+        createAndMoveText();
     </script>
 </body>
 </html>
